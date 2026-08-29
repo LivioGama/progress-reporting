@@ -55,6 +55,29 @@ Now: Integrating payment processing
 Blocks: Waiting for API keys from user
 ```
 
+## 🤖 Subagents & Delegation
+
+`progress-reporting` extends to delegated and parallel work:
+
+**Subagents** report honest `Progress: NN/100` scoped to their own delegated task, tag their updates (e.g. `Subagent [auth-lane]: Progress: 40/100`), and state status — `queued` / `running` / `done` / `blocked` — reporting blockers and completion immediately to the parent.
+
+**Coordinating agents** report on their subagents' progress, not just their own:
+
+- Track each subagent by name, assigned task, progress %, and status
+- Aggregate into one overall `Progress: NN/100` for the user-visible request
+- Show a per-subagent breakdown when multiple lanes run in parallel
+- Relay immediately whenever a subagent starts, finishes, blocks, or changes progress
+- Attribute each figure to its lane — never present a subagent's estimate as your own completion
+
+Example of parent reporting on parallel lanes:
+```
+Progress: 70/100  (coordinator)
+Done: Core refactor, database schema; docs-lane finished
+Now: 2 of 3 lanes still running (auth, ui); integrating auth-lane output
+Remains: UI polish, end-to-end testing
+Sub-agents: auth (75/100 · running), ui (40/100 · running), docs (100/100 · done)
+```
+
 ## 🎯 When to Apply
 
 - **Non-trivial work**: Tasks taking more than 30 seconds
